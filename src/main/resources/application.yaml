@@ -1,0 +1,16 @@
+spring:
+  application:
+    name: DocumentService
+
+  datasource:
+    url: jdbc:postgresql://localhost:5432/postgres
+    username: test_jpa
+    password: 123
+
+    driverClassName: org.postgresql.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    database: POSTGRESQL
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
