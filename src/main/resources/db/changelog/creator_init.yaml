@@ -1,0 +1,32 @@
+databaseChangeLog:
+  - changeSet:
+      id: 005-creator-init
+      author: your_name
+      changes:
+        - insert:
+            tableName: creator
+            columns:
+              - column:
+                  name: id
+                  valueComputed: "gen_random_uuid()"
+              - column:
+                  name: name
+                  value: "Author1"
+        - insert:
+            tableName: creator
+            columns:
+              - column:
+                  name: id
+                  valueComputed: "gen_random_uuid()"
+              - column:
+                  name: name
+                  value: "Author2"
+        - insert:
+            tableName: creator
+            columns:
+              - column:
+                  name: id
+                  valueComputed: "gen_random_uuid()"
+              - column:
+                  name: name
+                  value: "Author3"

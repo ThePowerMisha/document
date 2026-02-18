@@ -1,0 +1,61 @@
+databaseChangeLog:
+  - changeSet:
+      id: 003-create-document-history-table
+      author: your_name
+      changes:
+        - createTable:
+            tableName: document_history
+            columns:
+              - column:
+                  name: id
+                  type: UUID
+                  constraints:
+                    primaryKey: true
+                    primaryKeyName: pk_document_history
+                    nullable: false
+
+              - column:
+                  name: author_id
+                  type: UUID
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: action
+                  type: VARCHAR(50)
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: document_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: created_at
+                  type: TIMESTAMP WITH TIME ZONE
+
+              - column:
+                  name: commentary
+                  type: VARCHAR(1000)
+
+        - addForeignKeyConstraint:
+            baseTableName: document_history
+            baseColumnNames: document_id
+            referencedTableName: document
+            referencedColumnNames: id
+            constraintName: fk_document_history_document
+            onDelete: CASCADE
+
+        - addForeignKeyConstraint:
+            baseTableName: document_history
+            baseColumnNames: author_id
+            referencedTableName: creator
+            referencedColumnNames: id
+            constraintName: fk_document_creator_history
+
+        - addDefaultValue:
+            tableName: document_history
+            columnName: id
+            defaultValueComputed: gen_random_uuid()

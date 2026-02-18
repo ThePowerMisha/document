@@ -39,6 +39,8 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-validation'
 	implementation 'org.springframework.boot:spring-boot-starter-webmvc'
 
+	//utils
+	implementation 'com.google.guava:guava:33.5.0-jre'
 
 	//lombok
 	compileOnly 'org.projectlombok:lombok'
@@ -46,7 +48,10 @@ dependencies {
 
 	//Database
 	liquibaseRuntime 'org.liquibase:liquibase-core:5.0.1'
-	runtimeOnly 'org.postgresql:postgresql'
+	liquibaseRuntime 'info.picocli:picocli:4.7.7'
+	liquibaseRuntime 'org.postgresql:postgresql'
+	implementation 'org.postgresql:postgresql'
+
 
 	//mapper
 	implementation 'org.mapstruct:mapstruct:1.6.3'
@@ -58,14 +63,10 @@ dependencies {
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
 
-tasks.named('test') {
-	useJUnitPlatform()
-}
-
 liquibase {
 	activities {
 		main {
-			changeLogFile 'src/main/resources/db/changelog/db.changelog-master.yaml'
+			changelogFile 'src\\main\\resources\\db\\changelog\\db.changelog-master.yaml'
 			url 'jdbc:postgresql://localhost:5432/postgres'
 			username 'test_jpa'
 			password '123'

@@ -1,0 +1,16 @@
+databaseChangeLog:
+  - include:
+      file: table-creator.yaml
+      relativeToChangelogFile: true
+  - include:
+      file: table-document.yaml
+      relativeToChangelogFile: true
+  - include:
+      file: table-document-history.yaml
+      relativeToChangelogFile: true
+  - include:
+      file: table-document-register.yaml
+      relativeToChangelogFile: true
+  - include:
+      file: creator_init.yaml
+      relativeToChangelogFile: true
