@@ -1,7 +1,7 @@
 databaseChangeLog:
   - changeSet:
       id: 003-create-document-history-table
-      author: your_name
+      author: Mikhail
       changes:
         - createTable:
             tableName: document_history
@@ -51,9 +51,9 @@ databaseChangeLog:
         - addForeignKeyConstraint:
             baseTableName: document_history
             baseColumnNames: author_id
-            referencedTableName: creator
+            referencedTableName: author
             referencedColumnNames: id
-            constraintName: fk_document_creator_history
+            constraintName: fk_document_author_history
 
         - addDefaultValue:
             tableName: document_history

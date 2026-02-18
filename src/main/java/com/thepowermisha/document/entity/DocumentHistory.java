@@ -24,9 +24,9 @@ public class DocumentHistory {
     @JoinColumn(
             name = "author_id",
             nullable = false,
-            foreignKey = @ForeignKey(name = "fk_document_creator_history")
+            foreignKey = @ForeignKey(name = "fk_document_author_history")
     )
-    private Creator author;
+    private Author author;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)

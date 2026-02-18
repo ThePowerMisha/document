@@ -1,17 +1,17 @@
 databaseChangeLog:
   - changeSet:
-      id: 002-create-creator-table
-      author: your_name
+      id: 002-create-author-table
+      author: Mikhail
       changes:
         - createTable:
-            tableName: creator
+            tableName: author
             columns:
               - column:
                   name: id
                   type: UUID
                   constraints:
                     primaryKey: true
-                    primaryKeyName: pk_creator
+                    primaryKeyName: pk_author
                     nullable: false
 
               - column:
@@ -21,6 +21,6 @@ databaseChangeLog:
                     unique: true
 
         - addDefaultValue:
-            tableName: creator
+            tableName: author
             columnName: id
             defaultValueComputed: gen_random_uuid()

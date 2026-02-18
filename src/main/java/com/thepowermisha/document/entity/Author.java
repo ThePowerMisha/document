@@ -5,14 +5,14 @@ import lombok.*;
 
 import java.util.UUID;
 
-@Table(name = "creator")
+@Table(name = "author")
 @Entity
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode
-public class Creator {
+public class Author {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;

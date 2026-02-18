@@ -2,16 +2,15 @@ package com.thepowermisha.document.service;
 
 import com.google.common.collect.Lists;
 import com.thepowermisha.document.dto.DocumentDto;
-import com.thepowermisha.document.entity.Creator;
+import com.thepowermisha.document.entity.Author;
 import com.thepowermisha.document.entity.Document;
 import com.thepowermisha.document.mapper.DocumentMapper;
-import com.thepowermisha.document.repository.CreatorRepository;
+import com.thepowermisha.document.repository.AuthorRepository;
 import com.thepowermisha.document.repository.DocumentHistoryRepository;
 import com.thepowermisha.document.repository.DocumentRepository;
 import com.thepowermisha.document.type.DocumentResultStatus;
 import com.thepowermisha.document.type.DocumentStatus;
 import com.thepowermisha.document.util.DocumentNumberGenerator;
-import jdk.jshell.Snippet;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -30,7 +29,7 @@ public class DocumentService {
     private final DocumentRepository documentRepository;
     private final DocumentHistoryRepository documentHistoryRepository;
 
-    private final CreatorRepository creatorRepository;
+    private final AuthorRepository authorRepository;
 
     private final DocumentMapper documentMapper;
 
@@ -47,11 +46,11 @@ public class DocumentService {
         Objects.requireNonNull(name);
         Objects.requireNonNull(uuid);
 
-        Creator creator = creatorRepository.getReferenceById(uuid);
+        Author author = authorRepository.getReferenceById(uuid);
 
         Document save = documentRepository.save(new Document()
                 .setDocumentNumber(DocumentNumberGenerator.generate())
-                .setAuthor(creator)
+                .setAuthor(author)
                 .setName(name)
                 .setStatus(DocumentStatus.DRAFT)
                 .setCreatedAt(ZonedDateTime.now())
@@ -84,7 +83,10 @@ public class DocumentService {
 
         List<Document> draft = list.stream()
                 .filter(i -> i.getStatus() == DocumentStatus.DRAFT)
-                .map(i->i.setStatus(DocumentStatus.SUBMITTED))
+                .peek(i-> {
+                    i.setStatus(DocumentStatus.SUBMITTED);
+                    i.setUpdatedAt(ZonedDateTime.now());
+                })
                 .toList();
 
         List<Long> notContained = ids.stream()

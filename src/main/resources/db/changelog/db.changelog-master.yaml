@@ -1,6 +1,6 @@
 databaseChangeLog:
   - include:
-      file: table-creator.yaml
+      file: table-author.yaml
       relativeToChangelogFile: true
   - include:
       file: table-document.yaml
@@ -12,5 +12,5 @@ databaseChangeLog:
       file: table-document-register.yaml
       relativeToChangelogFile: true
   - include:
-      file: creator_init.yaml
+      file: author_init.yaml
       relativeToChangelogFile: true

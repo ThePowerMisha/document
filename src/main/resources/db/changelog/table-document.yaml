@@ -51,6 +51,6 @@ databaseChangeLog:
         - addForeignKeyConstraint:
             baseTableName: document
             baseColumnNames: author_id
-            referencedTableName: creator
+            referencedTableName: author
             referencedColumnNames: id
-            constraintName: fk_document_creator
+            constraintName: fk_document_author

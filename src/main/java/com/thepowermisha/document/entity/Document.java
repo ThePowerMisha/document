@@ -27,9 +27,9 @@ public class Document {
     @JoinColumn(
             name = "author_id",
             nullable = false,
-            foreignKey = @ForeignKey(name = "fk_document_creator")
+            foreignKey = @ForeignKey(name = "fk_document_author")
     )
-    private Creator author;
+    private Author author;
 
     @Column(nullable = false)
     private String name;

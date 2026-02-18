@@ -1,5 +1,5 @@
 package com.thepowermisha.document.type;
 
 public enum DocumentResultStatus {
-    SUCCESS, CONFLICT, NOT_FOUND
+    SUCCESS, CONFLICT, NOT_FOUND, REGISTRATION_ERROR
 }

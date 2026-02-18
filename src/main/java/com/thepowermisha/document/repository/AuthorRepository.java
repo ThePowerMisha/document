@@ -1,11 +1,11 @@
 package com.thepowermisha.document.repository;
 
-import com.thepowermisha.document.entity.Creator;
+import com.thepowermisha.document.entity.Author;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.UUID;
 
 @Repository
-public interface CreatorRepository extends JpaRepository<Creator, UUID> {
+public interface AuthorRepository extends JpaRepository<Author, UUID> {
 }

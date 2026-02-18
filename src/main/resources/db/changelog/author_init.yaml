@@ -1,10 +1,10 @@
 databaseChangeLog:
   - changeSet:
-      id: 005-creator-init
-      author: your_name
+      id: 005-author-init
+      author: Mikhail
       changes:
         - insert:
-            tableName: creator
+            tableName: author
             columns:
               - column:
                   name: id
@@ -13,7 +13,7 @@ databaseChangeLog:
                   name: name
                   value: "Author1"
         - insert:
-            tableName: creator
+            tableName: author
             columns:
               - column:
                   name: id
@@ -22,7 +22,7 @@ databaseChangeLog:
                   name: name
                   value: "Author2"
         - insert:
-            tableName: creator
+            tableName: author
             columns:
               - column:
                   name: id
