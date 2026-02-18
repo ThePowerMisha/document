@@ -3,6 +3,7 @@ package com.thepowermisha.document.entity;
 import com.thepowermisha.document.type.DocumentHistoryAction;
 import jakarta.persistence.*;
 import lombok.*;
+import lombok.experimental.Accessors;
 
 import java.time.ZonedDateTime;
 import java.util.UUID;
@@ -14,6 +15,7 @@ import java.util.UUID;
 @Getter
 @Setter
 @EqualsAndHashCode
+@Accessors(chain = true)
 public class DocumentHistory {
 
     @Id

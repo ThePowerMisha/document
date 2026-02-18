@@ -2,16 +2,23 @@ package com.thepowermisha.document.service;
 
 import com.google.common.collect.Lists;
 import com.thepowermisha.document.dto.DocumentDto;
+import com.thepowermisha.document.dto.DocumentProcessedStatusDto;
 import com.thepowermisha.document.entity.Author;
 import com.thepowermisha.document.entity.Document;
+import com.thepowermisha.document.entity.DocumentHistory;
+import com.thepowermisha.document.entity.DocumentRegister;
 import com.thepowermisha.document.mapper.DocumentMapper;
 import com.thepowermisha.document.repository.AuthorRepository;
 import com.thepowermisha.document.repository.DocumentHistoryRepository;
+import com.thepowermisha.document.repository.DocumentRegisterRepository;
 import com.thepowermisha.document.repository.DocumentRepository;
+import com.thepowermisha.document.type.DocumentHistoryAction;
 import com.thepowermisha.document.type.DocumentResultStatus;
 import com.thepowermisha.document.type.DocumentStatus;
 import com.thepowermisha.document.util.DocumentNumberGenerator;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.annotation.Lazy;
+import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -28,30 +35,31 @@ import java.util.stream.Collectors;
 public class DocumentService {
     private final DocumentRepository documentRepository;
     private final DocumentHistoryRepository documentHistoryRepository;
+    private final DocumentRegisterRepository documentRegisterRepository;
 
     private final AuthorRepository authorRepository;
 
     private final DocumentMapper documentMapper;
 
-    public DocumentDto getDocument(Long id){
+    public DocumentDto getDocument(Long id) {
         return null;
     }
 
-    public List<DocumentDto> getDocumentsList(List<Long> id){
+    public List<DocumentDto> getDocumentsList(List<Long> id) {
         return null;
     }
 
 
-    public DocumentDto createDraft(UUID uuid, String name) {
-        Objects.requireNonNull(name);
-        Objects.requireNonNull(uuid);
+    public DocumentDto createDraft(UUID authorUUID, String documentName) {
+        Objects.requireNonNull(documentName);
+        Objects.requireNonNull(authorUUID);
 
-        Author author = authorRepository.getReferenceById(uuid);
+        Author author = authorRepository.getReferenceById(authorUUID);
 
         Document save = documentRepository.save(new Document()
                 .setDocumentNumber(DocumentNumberGenerator.generate())
                 .setAuthor(author)
-                .setName(name)
+                .setName(documentName)
                 .setStatus(DocumentStatus.DRAFT)
                 .setCreatedAt(ZonedDateTime.now())
                 .setUpdatedAt(ZonedDateTime.now()));
@@ -59,56 +67,75 @@ public class DocumentService {
         return documentMapper.toDto(save);
     }
 
+
+
     /**
      * Set All document to status {@link   DocumentStatus#SUBMITTED}
-     * @param ids Document Id
+     *
+     * @param authorUUID
+     * @param ids        Document Id
      */
     @Transactional
-    public Map<Long, DocumentResultStatus> submitDocuments(List<Long> ids){
-        List<List<Long>> partition = Lists.partition(ids, 1000);
+    public List<DocumentProcessedStatusDto> submitDocuments(UUID authorUUID, List<Long> ids) {
 
-        List<Document> list = partition.stream()
-                .map(documentRepository::getAll)
-                .flatMap(Collection::stream).toList();
+        Objects.requireNonNull(authorUUID);
+        if (ids == null || ids.isEmpty()) {
+            return Collections.emptyList();
+        }
 
-        //
+        Author author = authorRepository.getReferenceById(authorUUID);
+        Map<Long, Document> dbDocuments = documentRepository.getAll(ids)
+                .stream()
+                .collect(Collectors.toMap(Document::getId, Function.identity()));
 
-        Set<Long> idsInDb = list.stream()
-                .map(Document::getId)
-                .collect(Collectors.toSet());
-
-        List<Document> notDraft = list.stream()
-                .filter(i -> i.getStatus() != DocumentStatus.DRAFT)
+        return ids.stream()
+                .map(id -> submitSingle(dbDocuments.get(id), id, author))
                 .toList();
 
-        List<Document> draft = list.stream()
-                .filter(i -> i.getStatus() == DocumentStatus.DRAFT)
-                .peek(i-> {
-                    i.setStatus(DocumentStatus.SUBMITTED);
-                    i.setUpdatedAt(ZonedDateTime.now());
-                })
-                .toList();
+    }
 
-        List<Long> notContained = ids.stream()
-                .filter(i -> !idsInDb.contains(i))
-                .toList();
+    private DocumentProcessedStatusDto submitSingle(Document document, Long id, Author author) {
 
-        List<Document> updatedDraft = documentRepository.saveAll(draft);
+        Optional<Document> optional = Optional.ofNullable(document);
+        if (optional.isEmpty()) {
+            return DocumentProcessedStatusDto.notFound(id);
+        }
 
-        Map<Long, DocumentResultStatus> notContainedMap = notContained.stream().collect(Collectors.toMap(Function.identity(), status-> DocumentResultStatus.NOT_FOUND));
-        Map<Long, DocumentResultStatus> draftMap = updatedDraft.stream().map(Document::getId).collect(Collectors.toMap(Function.identity(), status-> DocumentResultStatus.SUCCESS));
-        Map<Long, DocumentResultStatus> notDraftMap = notDraft.stream().map(Document::getId).collect(Collectors.toMap(Function.identity(), status-> DocumentResultStatus.CONFLICT));
+        Document doc = optional.get();
 
+        if (doc.getStatus() != DocumentStatus.DRAFT) {
+            return DocumentProcessedStatusDto.conflict(id);
+        }
 
-        Map<Long, DocumentResultStatus> resultStatusMap = new HashMap<>();
+        doc.setStatus(DocumentStatus.SUBMITTED);
+        doc.setUpdatedAt(ZonedDateTime.now());
 
-        resultStatusMap.putAll(notContainedMap);
-        resultStatusMap.putAll(draftMap);
-        resultStatusMap.putAll(notDraftMap);
+        DocumentProcessedStatusDto documentProcessed = submitDocumentStatus(doc);
 
-        return resultStatusMap;
+        if (documentProcessed.status() == DocumentResultStatus.SUCCESS) {
+            documentHistoryRepository.save(
+                    submit(doc, author, ZonedDateTime.now())
+            );
+        }
 
-        // TODO MAP TO <DOCUMENTID , ENUM STATUS>
-        // ADD METHODS
+        return documentProcessed;
+    }
+
+    private DocumentHistory submit(Document document, Author author, ZonedDateTime date) {
+        DocumentHistory history = new DocumentHistory();
+        history.setDocument(document);
+        history.setAuthor(author);
+        history.setAction(DocumentHistoryAction.SUBMIT);
+        history.setCreatedAt(date);
+        return history;
+    }
+
+    private DocumentProcessedStatusDto submitDocumentStatus(Document document) {
+        try {
+            documentRepository.updateStatus(document.getId(), DocumentStatus.SUBMITTED);
+            return new DocumentProcessedStatusDto(document.getId(), DocumentResultStatus.SUCCESS);
+        } catch (DataAccessException e) {
+            return new DocumentProcessedStatusDto(document.getId(), DocumentResultStatus.CONFLICT);
+        }
     }
 }

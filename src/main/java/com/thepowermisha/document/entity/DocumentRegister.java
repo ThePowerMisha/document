@@ -2,6 +2,7 @@ package com.thepowermisha.document.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import lombok.experimental.Accessors;
 
 import java.time.ZonedDateTime;
 import java.util.UUID;
@@ -13,6 +14,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode
+@Accessors(chain = true)
 public class DocumentRegister {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)

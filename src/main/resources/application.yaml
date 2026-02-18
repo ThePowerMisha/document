@@ -14,3 +14,6 @@ spring:
       ddl-auto: none
     database: POSTGRESQL
     database-platform: org.hibernate.dialect.PostgreSQLDialect
+
+document:
+  batch: 1000

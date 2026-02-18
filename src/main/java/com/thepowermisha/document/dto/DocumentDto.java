@@ -10,7 +10,7 @@ import java.time.ZonedDateTime;
 public class DocumentDto {
     private Long id;
     private String documentNumber;
-    private Author author;
+    private AuthorDto author;
     private String name;
     private DocumentStatus status;
     private ZonedDateTime createdAt;
