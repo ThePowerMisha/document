@@ -8,7 +8,7 @@ import java.time.ZonedDateTime;
 import java.util.UUID;
 
 @Entity
-@Table(name = "`document_history`")
+@Table(name = "document_history")
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
@@ -20,15 +20,24 @@ public class DocumentHistory {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    @Column(nullable = false)
-    private String author;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(
+            name = "author_id",
+            nullable = false,
+            foreignKey = @ForeignKey(name = "fk_document_creator_history")
+    )
+    private Creator author;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private DocumentHistoryAction action;
 
-    @ManyToOne
-    @JoinColumn(name = "document_uid", nullable = false)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(
+            name = "document_id",
+            nullable = false,
+            foreignKey = @ForeignKey(name = "fk_document_history_document")
+    )
     private Document document;
 
     private ZonedDateTime createdAt;

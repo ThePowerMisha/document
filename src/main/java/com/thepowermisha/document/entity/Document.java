@@ -3,27 +3,33 @@ package com.thepowermisha.document.entity;
 import com.thepowermisha.document.type.DocumentStatus;
 import jakarta.persistence.*;
 import lombok.*;
+import lombok.experimental.Accessors;
 
 import java.time.ZonedDateTime;
-import java.util.UUID;
 
 @Entity
-@Table(name = "`document`")
+@Table(name = "document")
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
 @Setter
 @EqualsAndHashCode
+@Accessors(chain = true)
 public class Document {
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    private UUID uid;
-
-    @Column(nullable = false)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
-    private String author;
+    @Column(nullable = false, unique = true)
+    private String documentNumber;
+
+    @ManyToOne(optional = false, fetch = FetchType.LAZY)
+    @JoinColumn(
+            name = "author_id",
+            nullable = false,
+            foreignKey = @ForeignKey(name = "fk_document_creator")
+    )
+    private Creator author;
 
     @Column(nullable = false)
     private String name;
