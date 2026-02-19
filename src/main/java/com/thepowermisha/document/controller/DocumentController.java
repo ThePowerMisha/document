@@ -57,10 +57,11 @@ public class DocumentController extends AbstractController {
         return documentService.getDocument(id);
     }
 
-//    @PostMapping("/concurrent")
-//    public Map<DocumentResultStatus, Integer> concurrentApprove(@RequestParam Integer threads,
-//                                                                @RequestParam Integer attempts){
-//        return
-//    }
+    @PostMapping("/concurrent")
+    public Map<DocumentResultStatus, Integer> concurrentApprove(@RequestParam Integer threads,
+                                                                @RequestParam Integer attempts,
+                                                                @RequestParam Long documentId){
+        return documentService.concurrentApprove(threads, attempts, documentId, getUserContext().getUserId());
+    }
 
 }

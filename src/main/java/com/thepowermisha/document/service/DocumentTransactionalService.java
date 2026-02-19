@@ -90,7 +90,7 @@ public class DocumentTransactionalService {
             documentRegisterRepository.saveAndFlush(
                     createDocumentForRegister(document, ZonedDateTime.now())
             );
-        } catch (DataIntegrityViolationException e) {
+        } catch (DataAccessException e) {
             throw new DocumentRegisterException(id, e);
         }
 

@@ -4,6 +4,7 @@ import com.thepowermisha.document.dto.DocumentDto;
 import com.thepowermisha.document.dto.DocumentProcessedStatusDto;
 import com.thepowermisha.document.entity.Author;
 import com.thepowermisha.document.entity.Document;
+import com.thepowermisha.document.exception.DocumentProcessingException;
 import com.thepowermisha.document.exception.DocumentRegisterException;
 import com.thepowermisha.document.mapper.DocumentMapper;
 import com.thepowermisha.document.repository.AuthorRepository;
@@ -170,25 +171,28 @@ public class DocumentService {
 //
 //    }
 
-    public Map<DocumentResultStatus, Integer> concurrentApprove(Integer threads, Integer attempts, Long documentId, Author author) {
+    public Map<DocumentResultStatus, Integer> concurrentApprove(Integer threads, Integer attempts, Long documentId, UUID authorUuid) {
 
         Map<DocumentResultStatus, Integer> resultStatus = new ConcurrentHashMap<>();
 
         List<CompletableFuture<Void>> futures = new ArrayList<>();
 
+        Author author = authorRepository.getReferenceById(authorUuid);
 
         try (ExecutorService executorService = Executors.newFixedThreadPool(threads)) {
 
             for (int i = 0; i < attempts; i++) {
-//                DocumentProcessedStatusDto documentProcessedStatusDto = documentTransactionalService.approveSingle(documentId, author);
-//                resultStatus.merge(documentProcessedStatusDto.status(), 1, Integer::sum);
-                futures.add(CompletableFuture.supplyAsync(() -> documentTransactionalService.approveSingle(documentId, author), executorService)
+                futures.add(CompletableFuture.supplyAsync(() -> approveOneDocuments(author.getId(),documentId ), executorService)
                         .thenAccept((result) -> resultStatus.merge(result.status(), 1, Integer::sum)));
             }
         }
 
 
-        CompletableFuture.allOf(futures.toArray(CompletableFuture[]::new));
+        try {
+            CompletableFuture.allOf(futures.toArray(CompletableFuture[]::new)).get();
+        } catch (InterruptedException | ExecutionException e) {
+            throw new DocumentProcessingException(e.getMessage());
+        }
 
         return resultStatus;
 
