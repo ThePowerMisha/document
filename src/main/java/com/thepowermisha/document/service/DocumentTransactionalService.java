@@ -19,6 +19,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.ZonedDateTime;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -36,11 +37,13 @@ public class DocumentTransactionalService {
      */
     @Transactional
     public DocumentProcessedStatusDto submitSingle( Long id, Author author) {
-        Document document = documentRepository.findById(id).orElse(null);
+        Optional<Document> doc = documentRepository.findById(id);
 
-        if (document == null) {
+        if (doc.isEmpty()) {
             return DocumentProcessedStatusDto.notFound(id);
         }
+
+        Document document = doc.get();
 
         if (document.getStatus() != DocumentStatus.DRAFT) {
             return DocumentProcessedStatusDto.conflict(id);
@@ -68,12 +71,13 @@ public class DocumentTransactionalService {
      */
     @Transactional
     public DocumentProcessedStatusDto approveSingle(Long id, Author author) {
+        Optional<Document> doc = documentRepository.findById(id);
 
-        Document document = documentRepository.findById(id).orElse(null);
-
-        if (document == null) {
+        if (doc.isEmpty()) {
             return DocumentProcessedStatusDto.notFound(id);
         }
+
+        Document document = doc.get();
 
         if (document.getStatus() != DocumentStatus.SUBMITTED) {
             return DocumentProcessedStatusDto.conflict(id);

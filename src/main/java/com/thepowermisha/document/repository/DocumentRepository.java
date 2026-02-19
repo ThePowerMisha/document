@@ -1,5 +1,6 @@
 package com.thepowermisha.document.repository;
 
+import com.thepowermisha.document.entity.Author;
 import com.thepowermisha.document.entity.Document;
 import com.thepowermisha.document.type.DocumentStatus;
 import jakarta.persistence.LockModeType;
@@ -30,4 +31,8 @@ public interface DocumentRepository extends JpaRepository<Document, Long> {
        where d.id = :id
        """)
     void updateStatus(Long id, DocumentStatus status);
+
+    List<Document> findByStatus(DocumentStatus status);
+
+    List<Document> findByAuthor(Author author);
 }
