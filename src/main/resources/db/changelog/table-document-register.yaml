@@ -16,6 +16,8 @@ databaseChangeLog:
               - column:
                   name: document_id
                   type: BIGINT
+                  constraints:
+                    unique: true
 
               - column:
                   name: date

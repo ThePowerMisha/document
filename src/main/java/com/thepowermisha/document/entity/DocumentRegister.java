@@ -23,7 +23,8 @@ public class DocumentRegister {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(
             name = "document_id",
-            foreignKey = @ForeignKey(name = "fk_document_history_document_register")
+            foreignKey = @ForeignKey(name = "fk_document_history_document_register"),
+            unique = true
     )
     private Document document;
 

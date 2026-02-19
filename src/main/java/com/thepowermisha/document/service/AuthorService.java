@@ -1,12 +1,12 @@
 package com.thepowermisha.document.service;
 
-import com.thepowermisha.document.dto.AuthorDto;
+import com.thepowermisha.document.entity.Author;
 import com.thepowermisha.document.repository.AuthorRepository;
 import com.thepowermisha.document.security.UuidTokenUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.UUID;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -18,6 +18,12 @@ public class AuthorService {
         return UuidTokenUtils.uuidToToken(authorRepository.findByName(authorName)
                         .orElseThrow()
                         .getId());
+    }
+
+    public List<String> getAuthorsNames(){
+        return authorRepository.findAll().stream()
+                .map(Author::getName)
+                .toList();
     }
 
 }

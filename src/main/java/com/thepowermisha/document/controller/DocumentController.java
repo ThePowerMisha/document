@@ -3,16 +3,12 @@ package com.thepowermisha.document.controller;
 import com.thepowermisha.document.dto.DocumentDto;
 import com.thepowermisha.document.dto.DocumentProcessedStatusDto;
 import com.thepowermisha.document.dto.ResponseDto;
-import com.thepowermisha.document.security.UserContext;
 import com.thepowermisha.document.service.DocumentBatchService;
 import com.thepowermisha.document.service.DocumentService;
-import com.thepowermisha.document.type.DocumentResultStatus;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Map;
-import java.util.UUID;
 
 @RestController
 @RequestMapping("/document")
@@ -35,6 +31,23 @@ public class DocumentController extends AbstractController{
     @PostMapping("/submit-batch")
     public ResponseDto<List<DocumentProcessedStatusDto>> submitBatchDocuments(@RequestBody List<Long> ids){
         return ResponseDto.success(documentBatchService.submitBatchDocument(getUserContext().getUserId(),ids));
+    }
+
+    @PostMapping("/approve")
+    public ResponseDto<List<DocumentProcessedStatusDto>> approveDocuments(@RequestBody List<Long> ids){
+        return ResponseDto.success(documentService.approveDocuments(getUserContext().getUserId(),ids));
+    }
+
+    @PostMapping("/approve-batch")
+    public ResponseDto<List<DocumentProcessedStatusDto>> approveBatchDocuments(@RequestBody List<Long> ids){
+        return ResponseDto.success(documentBatchService.approveBatchDocument(getUserContext().getUserId(),ids));
+    }
+
+
+
+    @GetMapping("/getAll")
+    public ResponseDto<List<DocumentDto>> getDocumentsById(@RequestBody List<Long> ids){
+        return ResponseDto.success(documentService.getDocumentsList(ids));
     }
 
 

@@ -15,4 +15,8 @@ public record DocumentProcessedStatusDto(Long id, DocumentResultStatus status) {
     public static DocumentProcessedStatusDto success(Long id) {
         return new DocumentProcessedStatusDto(id, DocumentResultStatus.SUCCESS);
     }
+
+    public static DocumentProcessedStatusDto registerException(Long id) {
+        return new DocumentProcessedStatusDto(id, DocumentResultStatus.REGISTRATION_ERROR);
+    }
 }
