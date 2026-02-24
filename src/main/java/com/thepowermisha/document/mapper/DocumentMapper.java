@@ -9,5 +9,6 @@ import org.mapstruct.Mapping;
 public interface DocumentMapper {
     DocumentDto toDto(Document document);
 
+    @Mapping(target = "documentHistory", ignore = true)
     Document toEntity(DocumentDto documentDto);
 }

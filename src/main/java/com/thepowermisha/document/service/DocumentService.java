@@ -10,17 +10,19 @@ import com.thepowermisha.document.mapper.DocumentMapper;
 import com.thepowermisha.document.repository.AuthorRepository;
 import com.thepowermisha.document.repository.DocumentRepository;
 import com.thepowermisha.document.type.DocumentResultStatus;
+import com.thepowermisha.document.type.DocumentSortingField;
 import com.thepowermisha.document.type.DocumentStatus;
 import com.thepowermisha.document.util.DocumentNumberGenerator;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.time.ZonedDateTime;
 import java.util.*;
 import java.util.concurrent.*;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
 
 @Service
@@ -39,15 +41,24 @@ public class DocumentService {
      * @return return Document by id
      */
     public DocumentDto getDocument(Long id) {
-        return documentMapper.toDto(documentRepository.findById(id).orElseThrow());
+        return documentMapper.toDto(documentRepository.findWithHistoryById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Document not found")));
     }
 
-    /**
-     * @param id List Document id
-     * @return return list of Document
-     */
-    public List<DocumentDto> getDocumentsList(List<Long> id) {
-        return documentRepository.findAllById(id)
+
+    public List<DocumentDto> getDocumentsList( List<Long> ids,
+                                               int page,
+                                               int size,
+                                               DocumentSortingField sortBy,
+                                               Sort.Direction direction) {
+
+        Pageable pageable = PageRequest.of(
+                page,
+                size,
+                Sort.by(direction, sortBy.getFieldName())
+        );
+
+        return documentRepository.findByIdIn(ids, pageable)
                 .stream()
                 .map(documentMapper::toDto)
                 .toList();

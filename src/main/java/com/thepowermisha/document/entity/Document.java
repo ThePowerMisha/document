@@ -6,6 +6,7 @@ import lombok.*;
 import lombok.experimental.Accessors;
 
 import java.time.ZonedDateTime;
+import java.util.List;
 
 @Entity
 @Table(name = "document")
@@ -37,6 +38,9 @@ public class Document {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private DocumentStatus status;
+
+    @OneToMany(mappedBy = "document", fetch = FetchType.LAZY)
+    private List<DocumentHistory> documentHistory;
 
     private ZonedDateTime createdAt;
     private ZonedDateTime updatedAt;

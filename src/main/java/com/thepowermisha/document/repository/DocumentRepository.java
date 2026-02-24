@@ -5,14 +5,15 @@ import com.thepowermisha.document.entity.Document;
 import com.thepowermisha.document.type.DocumentStatus;
 import jakarta.persistence.LockModeType;
 import jakarta.transaction.Transactional;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Lock;
-import org.springframework.data.jpa.repository.Modifying;
-import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.*;
 import org.springframework.stereotype.Repository;
 
 import java.time.ZonedDateTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
@@ -31,6 +32,12 @@ public interface DocumentRepository extends JpaRepository<Document, Long> {
        where d.id = :id
        """)
     void updateStatus(Long id, DocumentStatus status);
+
+    @EntityGraph(attributePaths = "documentHistory")
+    Page<Document> findByIdIn(List<Long> ids, Pageable pageable);
+
+    @EntityGraph(attributePaths = "documentHistory")
+    Optional<Document> findWithHistoryById(Long id);
 
     List<Document> findByStatus(DocumentStatus status);
 

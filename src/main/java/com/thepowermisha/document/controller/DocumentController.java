@@ -6,7 +6,9 @@ import com.thepowermisha.document.dto.ResponseDto;
 import com.thepowermisha.document.service.DocumentBatchService;
 import com.thepowermisha.document.service.DocumentService;
 import com.thepowermisha.document.type.DocumentResultStatus;
+import com.thepowermisha.document.type.DocumentSortingField;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Sort;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -45,10 +47,17 @@ public class DocumentController extends AbstractController {
         return ResponseDto.success(documentBatchService.approveBatchDocument(getUserContext().getUserId(), ids));
     }
 
-
     @GetMapping("/getAll")
-    public ResponseDto<List<DocumentDto>> getDocumentsById(@RequestBody List<Long> ids) {
-        return ResponseDto.success(documentService.getDocumentsList(ids));
+    public ResponseDto<List<DocumentDto>> getDocumentsById(@RequestBody List<Long> ids,
+                                                           @RequestParam(defaultValue = "0") Integer offset,
+                                                           @RequestParam(defaultValue = "30") Integer limit,
+                                                           @RequestParam(defaultValue = "id") String documentSortingField,
+                                                           @RequestParam(defaultValue = "ASC") Sort.Direction direction) {
+        return ResponseDto.success(documentService.getDocumentsList(ids,
+                offset,
+                limit,
+                DocumentSortingField.getByFieldName(documentSortingField),
+                direction));
     }
 
 
@@ -60,7 +69,7 @@ public class DocumentController extends AbstractController {
     @PostMapping("/concurrent")
     public Map<DocumentResultStatus, Integer> concurrentApprove(@RequestParam Integer threads,
                                                                 @RequestParam Integer attempts,
-                                                                @RequestParam Long documentId){
+                                                                @RequestParam Long documentId) {
         return documentService.concurrentApprove(threads, attempts, documentId, getUserContext().getUserId());
     }
 
