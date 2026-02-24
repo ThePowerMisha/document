@@ -1,0 +1,41 @@
+databaseChangeLog:
+  - changeSet:
+      id: 005-author-init
+      author: Mikhail
+      changes:
+        - insert:
+            tableName: author
+            columns:
+              - column:
+                  name: id
+                  valueComputed: "gen_random_uuid()"
+              - column:
+                  name: name
+                  value: "Author1"
+        - insert:
+            tableName: author
+            columns:
+              - column:
+                  name: id
+                  valueComputed: "gen_random_uuid()"
+              - column:
+                  name: name
+                  value: "Author2"
+        - insert:
+            tableName: author
+            columns:
+              - column:
+                  name: id
+                  valueComputed: "gen_random_uuid()"
+              - column:
+                  name: name
+                  value: "Author3"
+#        - insert:
+#            tableName: author
+#            columns:
+#              - column:
+#                  name: id
+#                  valueComputed: "gen_random_uuid()"
+#              - column:
+#                  name: name
+#                  value: "TECH_USER"

@@ -1,0 +1,29 @@
+spring:
+  application:
+    name: DocumentService
+  liquibase:
+    enabled: true
+    change-log: classpath:db/changelog/db.changelog-master.yaml
+
+  datasource:
+    url: jdbc:postgresql://localhost:5432/postgres
+    username: test_jpa
+    password: 123
+
+    driverClassName: org.postgresql.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: none
+    database: POSTGRESQL
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+
+document:
+  batch: 1000
+
+
+app:
+  batch-size: 50
+  worker:
+    submit-delay: 10000
+    approve-delay: 15000
