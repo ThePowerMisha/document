@@ -11,14 +11,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
 @Service
-@EnableScheduling
 @RequiredArgsConstructor
 @Slf4j
 public class DocumentSchedulerService {
@@ -39,7 +37,7 @@ public class DocumentSchedulerService {
                 .map(DocumentDto::getId)
                 .toList();
 
-        log.info("(SUBMIT) Draft documents count: {}", documentIds.size());
+        log.info("(SUBMIT) Draft documents found: {}", documentIds.size());
         List<DocumentProcessedStatusDto> processedStatusDtos = documentService.submitDocuments(
                 documentIds,
                 authorUtil.getUserContext());
@@ -57,7 +55,7 @@ public class DocumentSchedulerService {
                 .map(DocumentDto::getId)
                 .toList();
 
-        log.info("(APPROVE) Submitted documents count: {}", documentIds.size());
+        log.info("(APPROVE) Submit documents found: {}", documentIds.size());
         List<DocumentProcessedStatusDto> processedStatusDtos = documentService.approveDocuments(
                 documentIds,
                 authorUtil.getUserContext());
