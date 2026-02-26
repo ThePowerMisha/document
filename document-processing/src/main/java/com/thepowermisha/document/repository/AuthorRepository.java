@@ -2,6 +2,7 @@ package com.thepowermisha.document.repository;
 
 import com.thepowermisha.document.entity.Author;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
@@ -10,4 +11,7 @@ import java.util.UUID;
 @Repository
 public interface AuthorRepository extends JpaRepository<Author, UUID> {
     Optional<Author> findByName(String name);
+
+    @Query("SELECT u FROM User u WHERE u.username = 'TECH_USER'")
+    Optional<Author> findTechUser();
 }

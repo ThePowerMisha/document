@@ -10,5 +10,6 @@ public interface DocumentMapper {
     DocumentDto toDto(Document document);
 
     @Mapping(target = "documentHistory", ignore = true)
+    @Mapping(target = "author", ignore = true)
     Document toEntity(DocumentDto documentDto);
 }

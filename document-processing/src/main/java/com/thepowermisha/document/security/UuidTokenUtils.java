@@ -6,7 +6,6 @@ import lombok.experimental.UtilityClass;
 
 import javax.crypto.SecretKey;
 import java.nio.charset.StandardCharsets;
-import java.util.Date;
 import java.util.UUID;
 
 @UtilityClass
@@ -17,7 +16,6 @@ public class UuidTokenUtils {
     public String uuidToToken(UUID uuid) {
         return Jwts.builder()
                 .subject(uuid.toString())
-                .issuedAt(new Date())
                 .signWith(key)
                 .compact();
     }

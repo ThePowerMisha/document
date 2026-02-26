@@ -106,6 +106,11 @@ public class DocumentTransactionalService {
         return result;
     }
 
+    /**
+     * update document in repository
+     * @param document Document
+     * @return Status of updated Document if Document not updated return {@link DocumentResultStatus#CONFLICT}
+     */
     private DocumentProcessedStatusDto updateDocumentStatus(Document document) {
         try {
             documentRepository.updateStatus(document.getId(), document.getStatus());
@@ -142,6 +147,13 @@ public class DocumentTransactionalService {
         return history;
     }
 
+
+    /**
+     * Create document for register
+     * @param document Document
+     * @param date  Register Date
+     * @return new Document for Register
+     */
     private DocumentRegister createDocumentForRegister(Document document, ZonedDateTime date) {
         DocumentRegister register = new DocumentRegister();
         register.setDocument(document);

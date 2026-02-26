@@ -1,39 +1,47 @@
 package com.thepowermisha.document.controller;
 
+import com.thepowermisha.document.dto.ConcurrentApproveDocumentDto;
 import com.thepowermisha.document.dto.DocumentDto;
 import com.thepowermisha.document.dto.DocumentProcessedStatusDto;
 import com.thepowermisha.document.dto.ResponseDto;
-import com.thepowermisha.document.request.DocumentPaginationRequest;
-import com.thepowermisha.document.request.DocumentSearchRequest;
-import com.thepowermisha.document.request.DocumentSortingRequest;
+import com.thepowermisha.document.request.*;
+import com.thepowermisha.document.security.UserContextHolder;
 import com.thepowermisha.document.service.DocumentBatchService;
 import com.thepowermisha.document.service.DocumentService;
-import com.thepowermisha.document.type.DocumentResultStatus;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
-import java.util.Map;
 
 @RestController
 @RequestMapping("/document")
 @RequiredArgsConstructor
-public class DocumentController extends AbstractController {
+public class DocumentController{
 
     private final DocumentService documentService;
     private final DocumentBatchService documentBatchService;
 
 
     @GetMapping("/get-documents")
-    public ResponseDto<List<DocumentDto>> getDocumentsById(@RequestBody DocumentSortingRequest request) {
-        return ResponseDto.success(documentService.getDocumentsList(request));
+    public ResponseDto<List<DocumentDto>> getDocumentsById(
+            @PageableDefault(size = 20, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
+        return ResponseDto.success(documentService.getDocumentsList(pageable));
     }
 
     @GetMapping("/get-ids-sorted")
-    public ResponseDto<List<DocumentDto>> getDocumentsById(@RequestBody DocumentPaginationRequest document) {
-        return ResponseDto.success(documentService.getDocumentsListByIds(document.getIds(),document.getRequest()));
+    public ResponseDto<List<DocumentDto>> getDocumentsById(
+            @Valid @RequestBody List<@NotNull Long> documentIds,
+            @PageableDefault(size = 20, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable
+    ) {
+        return ResponseDto.success(documentService.getDocumentsListByIds(documentIds, pageable));
     }
-
 
     @GetMapping("/{id}")
     public ResponseDto<DocumentDto> getDocument(@PathVariable Long id) {
@@ -41,46 +49,62 @@ public class DocumentController extends AbstractController {
     }
 
     @PostMapping("/search")
-    public ResponseDto<List<DocumentDto>> search(@RequestBody DocumentSearchRequest request) {
-        return ResponseDto.success(documentService.searchDocument(request));
+    public ResponseDto<List<DocumentDto>> search(
+            @Valid @RequestBody DocumentSearchRequest request,
+            @PageableDefault(size = 20, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
+        return ResponseDto.success(documentService.searchDocument(request, pageable));
     }
 
     @PostMapping("/concurrent")
-    public ResponseDto<Map<DocumentResultStatus, Integer>> concurrentApprove(@RequestParam Integer threads,
-                                                                @RequestParam Integer attempts,
-                                                                @RequestParam Long documentId) {
-        return ResponseDto.success(documentService.concurrentApprove(
-                threads,
-                attempts,
-                documentId,
-                getUserContext().getUserId())
-        );
+    public ResponseDto<ConcurrentApproveDocumentDto> concurrentApprove(@Valid @RequestParam ConcurrentTestRequest request) {
+        return ResponseDto.success(documentService.concurrentApprove(request));
     }
 
 
     @PutMapping("/create")
-    public ResponseDto<DocumentDto> createDraft(@RequestParam String name) {
-        return ResponseDto.success(documentService.createDraft(getUserContext().getUserId(), name));
+    public ResponseDto<DocumentDto> createDraft(@Valid @RequestParam DocumentCreateRequest name) {
+        if(UserContextHolder.getCurrentUser() == null){
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
+        }
+        return ResponseDto.success(documentService.createDraft(name));
     }
 
     @PostMapping("/submit")
-    public ResponseDto<List<DocumentProcessedStatusDto>> submitDocuments(@RequestBody List<Long> ids) {
-        return ResponseDto.success(documentService.submitDocuments(getUserContext().getUserId(), ids));
+    public ResponseDto<List<DocumentProcessedStatusDto>> submitDocuments(@Valid @RequestBody List<@NotNull Long> ids) {
+        if (ids.size() > 1000) {
+            throw new IllegalArgumentException("Maximum 1000 documents per request");
+        }
+        if(UserContextHolder.getCurrentUser() == null){
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
+        }
+        return ResponseDto.success(documentService.submitDocuments(ids));
     }
 
     @PostMapping("/submit-batch")
-    public ResponseDto<List<DocumentProcessedStatusDto>> submitBatchDocuments(@RequestBody List<Long> ids) {
-        return ResponseDto.success(documentBatchService.submitBatchDocument(getUserContext().getUserId(), ids));
+    public ResponseDto<List<DocumentProcessedStatusDto>> submitBatchDocuments(@Valid @RequestBody List<@NotNull Long> ids) {
+        if(UserContextHolder.getCurrentUser() == null){
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
+        }
+        return ResponseDto.success(documentBatchService.submitBatchDocument(ids));
     }
 
     @PostMapping("/approve")
-    public ResponseDto<List<DocumentProcessedStatusDto>> approveDocuments(@RequestBody List<Long> ids) {
-        return ResponseDto.success(documentService.approveDocuments(getUserContext().getUserId(), ids));
+    public ResponseDto<List<DocumentProcessedStatusDto>> approveDocuments(@Valid @RequestBody List<@NotNull Long> ids) {
+        if(UserContextHolder.getCurrentUser() == null){
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
+        }
+        if (ids.size() > 1000) {
+            throw new IllegalArgumentException("Maximum 1000 documents per request");
+        }
+        return ResponseDto.success(documentService.approveDocuments(ids));
     }
 
     @PostMapping("/approve-batch")
-    public ResponseDto<List<DocumentProcessedStatusDto>> approveBatchDocuments(@RequestBody List<Long> ids) {
-        return ResponseDto.success(documentBatchService.approveBatchDocument(getUserContext().getUserId(), ids));
+    public ResponseDto<List<DocumentProcessedStatusDto>> approveBatchDocuments(@Valid @RequestBody List<@NotNull Long> ids) {
+        if(UserContextHolder.getCurrentUser() == null){
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
+        }
+        return ResponseDto.success(documentBatchService.approveBatchDocument(ids));
     }
 
 }

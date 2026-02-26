@@ -7,16 +7,13 @@ import com.thepowermisha.document.entity.Document_;
 import com.thepowermisha.document.request.DocumentSearchRequest;
 import com.thepowermisha.document.type.DocumentStatus;
 import jakarta.persistence.LockModeType;
-import jakarta.persistence.criteria.JoinType;
 import jakarta.persistence.criteria.Predicate;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.*;
-import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -62,7 +59,8 @@ public interface DocumentRepository extends JpaRepository<Document, Long>, JpaSp
             if (request.getDateTo() != null) {
                 conjunction = builder.and(builder.lessThan(root.get(Document_.CREATED_AT), request.getDateTo()));
             }
-
+//            root.fetch(Document_.AUTHOR, JoinType.LEFT);
+//            root.fetch(Document_.DOCUMENT_HISTORY, JoinType.LEFT);
             return conjunction;
         };
 

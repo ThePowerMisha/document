@@ -3,6 +3,7 @@ package com.thepowermisha.document.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.List;
 import java.util.UUID;
 
 @Table(name = "author")
@@ -18,4 +19,7 @@ public class Author {
     private UUID id;
 
     private String name;
+
+    @OneToMany(mappedBy = "author", fetch = FetchType.LAZY)
+    private List<Document> document;
 }

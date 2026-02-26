@@ -17,16 +17,16 @@ public class DocumentBatchService {
     @Value("${document.batch:1000}")
     private Integer batchSize;
 
-    public List<DocumentProcessedStatusDto> submitBatchDocument(UUID authorUUID, List<Long> ids) {
+    public List<DocumentProcessedStatusDto> submitBatchDocument(List<Long> ids) {
         return Lists.partition(ids, batchSize).stream()
-                .map(i -> documentService.submitDocuments(authorUUID, i))
+                .map(documentService::submitDocuments)
                 .flatMap(Collection::stream)
                 .toList();
     }
 
-    public List<DocumentProcessedStatusDto> approveBatchDocument(UUID authorUUID, List<Long> ids) {
+    public List<DocumentProcessedStatusDto> approveBatchDocument(List<Long> ids) {
         return Lists.partition(ids, batchSize).stream()
-                .map(i -> documentService.approveDocuments(authorUUID, i))
+                .map(documentService::approveDocuments)
                 .flatMap(Collection::stream)
                 .toList();
     }
