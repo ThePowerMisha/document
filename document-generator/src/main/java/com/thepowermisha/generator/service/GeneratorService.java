@@ -28,11 +28,10 @@ public class GeneratorService {
     private String url;
 
     public void generateDocuments(){
-
+        log.info("Document to creation " + documentCount);
         for (int i = 0; i < documentCount; i++) {
 
             HttpHeaders headers = new HttpHeaders();
-//            headers.setBearerAuth(authorUtil.getAuthor().getId().toString());
             headers.set("Authorization", "Bearer " + UuidTokenUtils.uuidToToken(authorUtil.getAuthor().getId()));
             headers.setContentType(MediaType.APPLICATION_JSON);
 
