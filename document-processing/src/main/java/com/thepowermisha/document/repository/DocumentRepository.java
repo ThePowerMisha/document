@@ -16,6 +16,7 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Repository
 public interface DocumentRepository extends JpaRepository<Document, Long>, JpaSpecificationExecutor<Document>{
@@ -35,6 +36,9 @@ public interface DocumentRepository extends JpaRepository<Document, Long>, JpaSp
 
     @EntityGraph(attributePaths = "documentHistory")
     Page<Document> findByIdIn(List<Long> ids, Pageable pageable);
+
+    @Query("SELECT d FROM Document d WHERE d.id IN :ids")
+    Page<Document> findByIdsWithPagination(List<Long> ids, Pageable pageable);
 
     @EntityGraph(attributePaths = "documentHistory")
     Optional<Document> findWithHistoryById(Long id);

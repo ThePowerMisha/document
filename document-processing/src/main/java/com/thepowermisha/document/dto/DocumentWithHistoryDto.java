@@ -7,12 +7,13 @@ import java.time.ZonedDateTime;
 import java.util.List;
 
 @Data
-public class DocumentDto {
+public class DocumentWithHistoryDto {
     private Long id;
     private String documentNumber;
     private AuthorDto author;
     private String name;
     private DocumentStatus status;
+    private List<DocumentHistoryDto> documentHistory;
     private ZonedDateTime createdAt;
     private ZonedDateTime updatedAt;
 }

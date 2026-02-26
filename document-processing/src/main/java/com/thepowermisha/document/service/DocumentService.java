@@ -3,6 +3,7 @@ package com.thepowermisha.document.service;
 import com.thepowermisha.document.dto.ConcurrentApproveDocumentDto;
 import com.thepowermisha.document.dto.DocumentDto;
 import com.thepowermisha.document.dto.DocumentProcessedStatusDto;
+import com.thepowermisha.document.dto.DocumentWithHistoryDto;
 import com.thepowermisha.document.entity.Author;
 import com.thepowermisha.document.entity.Document;
 import com.thepowermisha.document.exception.AuthorNotFoundException;
@@ -49,9 +50,9 @@ public class DocumentService {
      * @param id Document id
      * @return return Document by id
      */
-    public DocumentDto getDocument(Long id) {
+    public DocumentWithHistoryDto getDocument(Long id) {
         return documentRepository.findWithHistoryById(id)
-                .map(documentMapper::toDto)
+                .map(documentMapper::toHistoryDto)
                 .orElseThrow(() -> new DocumentNotFoundException(id));
     }
 
@@ -72,7 +73,7 @@ public class DocumentService {
      * @return Sorted Documents in ids
      */
     public List<DocumentDto> getDocumentsListByIds(List<Long> ids, Pageable pageable) {
-        return documentRepository.findByIdIn(ids, pageable)
+        return documentRepository.findByIdsWithPagination(ids, pageable)
                 .stream()
                 .map(documentMapper::toDto)
                 .toList();

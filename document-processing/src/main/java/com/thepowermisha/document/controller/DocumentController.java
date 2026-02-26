@@ -1,9 +1,6 @@
 package com.thepowermisha.document.controller;
 
-import com.thepowermisha.document.dto.ConcurrentApproveDocumentDto;
-import com.thepowermisha.document.dto.DocumentDto;
-import com.thepowermisha.document.dto.DocumentProcessedStatusDto;
-import com.thepowermisha.document.dto.ResponseDto;
+import com.thepowermisha.document.dto.*;
 import com.thepowermisha.document.request.*;
 import com.thepowermisha.document.security.UserContextHolder;
 import com.thepowermisha.document.service.DocumentBatchService;
@@ -44,7 +41,7 @@ public class DocumentController{
     }
 
     @GetMapping("/{id}")
-    public ResponseDto<DocumentDto> getDocument(@PathVariable Long id) {
+    public ResponseDto<DocumentWithHistoryDto> getDocument(@PathVariable Long id) {
         return ResponseDto.success(documentService.getDocument(id));
     }
 
