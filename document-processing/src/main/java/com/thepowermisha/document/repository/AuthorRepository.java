@@ -12,6 +12,6 @@ import java.util.UUID;
 public interface AuthorRepository extends JpaRepository<Author, UUID> {
     Optional<Author> findByName(String name);
 
-    @Query("SELECT u FROM User u WHERE u.username = 'TECH_USER'")
+    @Query("SELECT a FROM Author a WHERE a.name = 'TECH_USER'")
     Optional<Author> findTechUser();
 }
