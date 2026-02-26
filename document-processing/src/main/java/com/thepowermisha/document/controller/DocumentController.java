@@ -58,7 +58,7 @@ public class DocumentController{
     }
 
 
-    @PutMapping("/create")
+    @PutMapping()
     public ResponseDto<DocumentDto> createDraft(@Valid @RequestBody DocumentCreateRequest name) {
         if(UserContextHolder.getCurrentUser() == null){
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);

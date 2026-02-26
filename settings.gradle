@@ -1,4 +1,5 @@
 rootProject.name = 'document'
 include 'background-worker'
 include 'document-processing'
+include 'document-generator'
 

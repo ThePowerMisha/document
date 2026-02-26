@@ -129,6 +129,27 @@ public class DocumentService {
                         .setUpdatedAt(ZonedDateTime.now())));
     }
 
+    @Transactional
+    public void createBatchDraft(List<DocumentCreateRequest> documentNames, @Nullable UserContext userContext) {
+        var user = Optional.ofNullable(userContext)
+                .orElse(UserContextHolder.getCurrentUser());
+
+        if (!authorRepository.existsById(user.userId())) {
+            throw new AuthorNotFoundException("Author not found. Author id: " + user.userId());
+        }
+
+        List<Document> documents = documentNames.stream().map(i -> new Document()
+                        .setDocumentNumber(DocumentNumberGenerator.generate())
+                        .setAuthor(authorRepository.getReferenceById(user.userId()))
+                        .setName(i.getTitle())
+                        .setStatus(DocumentStatus.DRAFT)
+                        .setCreatedAt(ZonedDateTime.now())
+                        .setUpdatedAt(ZonedDateTime.now()))
+                .toList();
+
+        documentRepository.saveAll(documents);
+    }
+
 
     /**
      * Set All document to status {@link   DocumentStatus#SUBMITTED}
