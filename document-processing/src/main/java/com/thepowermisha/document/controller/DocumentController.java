@@ -21,7 +21,7 @@ import org.springframework.web.server.ResponseStatusException;
 import java.util.List;
 
 @RestController
-@RequestMapping("/document")
+@RequestMapping("/api/document")
 @RequiredArgsConstructor
 public class DocumentController{
 
@@ -56,13 +56,13 @@ public class DocumentController{
     }
 
     @PostMapping("/concurrent")
-    public ResponseDto<ConcurrentApproveDocumentDto> concurrentApprove(@Valid @RequestParam ConcurrentTestRequest request) {
+    public ResponseDto<ConcurrentApproveDocumentDto> concurrentApprove(@Valid @RequestBody ConcurrentTestRequest request) {
         return ResponseDto.success(documentService.concurrentApprove(request));
     }
 
 
     @PutMapping("/create")
-    public ResponseDto<DocumentDto> createDraft(@Valid @RequestParam DocumentCreateRequest name) {
+    public ResponseDto<DocumentDto> createDraft(@Valid @RequestBody DocumentCreateRequest name) {
         if(UserContextHolder.getCurrentUser() == null){
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
         }
