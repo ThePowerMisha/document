@@ -1,8 +1,6 @@
 package com.thepowermisha.generator.service;
 
-import com.thepowermisha.document.request.DocumentCreateRequest;
 import com.thepowermisha.document.security.UuidTokenUtils;
-import com.thepowermisha.document.service.DocumentService;
 import com.thepowermisha.generator.util.AuthorUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -11,8 +9,6 @@ import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
-import java.util.List;
-import java.util.stream.IntStream;
 
 @Service
 @RequiredArgsConstructor
