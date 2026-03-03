@@ -1,16 +1,16 @@
 databaseChangeLog:
   - include:
-      file: table-author.yaml
+      file: changeset/table-author.yaml
       relativeToChangelogFile: true
   - include:
-      file: table-document.yaml
+      file: changeset/table-document.yaml
       relativeToChangelogFile: true
   - include:
-      file: table-document-history.yaml
+      file: changeset/table-document-history.yaml
       relativeToChangelogFile: true
   - include:
-      file: table-document-register.yaml
+      file: changeset/table-document-register.yaml
       relativeToChangelogFile: true
   - include:
-      file: author_init.yaml
+      file: changeset/author_init.yaml
       relativeToChangelogFile: true

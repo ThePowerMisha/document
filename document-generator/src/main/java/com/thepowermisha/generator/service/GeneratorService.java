@@ -46,7 +46,7 @@ public class GeneratorService {
                     String.class
             );
 
-            log.info("Created document #" + (i + 1) +
+            log.info("Created document " + (i + 1) +
                     "/" + documentCount +
                     " Status: " + response.getStatusCode());
         }
